@@ -1,0 +1,5 @@
+export enum Type {
+   PREVENTIVE = "PREVENTIVE",
+   CORRECTIVE = "CORRECTIVE",
+   EMERGENCY = "EMERGENCY",
+}

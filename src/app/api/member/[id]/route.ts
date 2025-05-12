@@ -9,39 +9,41 @@ function getIdFromUrl(req: NextRequest): string {
 export async function GET(req: NextRequest) {
   const id = getIdFromUrl(req)
 
-  const user = await prisma.user.findUnique({
+  const member = await prisma.member.findUnique({
     where: { id },
   })
 
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  if (!member) {
+    return NextResponse.json({ error: 'Member not found' }, { status: 404 })
   }
 
-  return NextResponse.json(user)
+  return NextResponse.json(member)
 }
 
 export async function PUT(req: NextRequest) {
   const id = getIdFromUrl(req)
   const body = await req.json()
 
-  const user = await prisma.user.update({
+  const member = await prisma.member.update({
     where: { id },
     data: {
       name: body.name,
-      email: body.email,
-      role: body.role,
+      gender: body.gender,
+      birthdate: new Date(body.birthdate),
+      class: body.class,
+      position: body.position,
     },
   })
 
-  return NextResponse.json(user)
+  return NextResponse.json(member)
 }
 
 export async function DELETE(req: NextRequest) {
   const id = getIdFromUrl(req)
 
-  await prisma.user.delete({
+  await prisma.member.delete({
     where: { id },
   })
 
-  return NextResponse.json({ message: 'User deleted' })
+  return NextResponse.json({ message: 'Member deleted' })
 }

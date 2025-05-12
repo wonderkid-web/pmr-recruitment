@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PLN Maintenance Schedule App's",
-  description: "PLN Maintenance Schedule App's",
+  title: "PMR Recruitment Member",
+  description: "Daftar PMR Jadi Lebih Mudah!",
 };
 
 export default function RootLayout({

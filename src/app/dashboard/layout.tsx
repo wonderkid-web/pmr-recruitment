@@ -26,7 +26,7 @@ export default function DashboardLayout({
       const stored = sessionStorage.getItem("user")
 
       if (!stored) {
-         router.push("/auth/login")
+         // router.push("/auth/login")
          return
       }
 
@@ -40,7 +40,7 @@ export default function DashboardLayout({
    }, [router])
 
 
-   if (!user) return null
+   // if (!user) return null
 
    return (
       <SidebarProvider>

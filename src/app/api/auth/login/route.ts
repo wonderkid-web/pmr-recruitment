@@ -1,25 +1,21 @@
-import { prisma } from "@/libs/client"
-import { compare } from "bcryptjs"
-import { NextResponse } from "next/server"
+import { prisma } from "@/libs/client";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-   const { email, password } = await req.json()
+export async function POST(req: NextRequest) {
+  const { email, password } = await req.json();
 
-   const user = await prisma.user.findUnique({ where: { email } })
+  console.log(email, password)
 
-   if (!user || !(await compare(password, user.password))) {
-      return NextResponse.json({ message: "Invalid credentials" }, { status: 401 })
-   }
+  const member = await prisma.member.findFirst({
+    where: { email, password, status: true },
+  });
 
-   const response = NextResponse.json({
-      data: {
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      },
-   })
+  if (!member) {
+    return NextResponse.json(
+      { message: "Nama atau password salah, atau akun belum di-approve" },
+      { status: 401 }
+    );
+  }
 
-   response.cookies.set("role", user.role, { path: "/" })
-
-   return response
+  return NextResponse.json({ id: member.id, name: member.name });
 }

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,44 +6,6 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-}
-
-model Asset {
-  id          String     @id @default(uuid())
-  name        String
-  type        String
-  location    String
-  description String?
-  schedules   Schedule[]
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-}
-
-model Schedule {
-  id       String   @id @default(uuid())
-  asset_id String
-  date     DateTime
-  type     Type
-  notes    String?
-
-  asset      Asset    @relation(fields: [asset_id], references: [id])
-  record     Record?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
-model Record {
-  id             String   @id @default(uuid())
-  schedule_id    String   @unique
-  performed_date DateTime
-  performed_by   String
-  findings       String?
-  action_taken   String?
-  status         Status
-
-  schedule   Schedule @relation(fields: [schedule_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 }
 
 model User {
@@ -62,10 +18,46 @@ model User {
   updated_at DateTime @updatedAt
 }
 
-enum Type {
-  PREVENTIVE
-  CORRECTIVE
-  EMERGENCY
+model Asset {
+  id          String     @id
+  name        String
+  type        String
+  location    String
+  description String?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime
+  Schedule    Schedule[]
+}
+
+model Record {
+  id             String   @id
+  schedule_id    String   @unique
+  performed_date DateTime
+  performed_by   String
+  findings       String?
+  action_taken   String?
+  status         Status
+  created_at     DateTime @default(now())
+  updated_at     DateTime
+  Schedule       Schedule @relation(fields: [schedule_id], references: [id])
+}
+
+model Schedule {
+  id         String   @id
+  asset_id   String
+  date       DateTime
+  type       Type
+  notes      String?
+  created_at DateTime @default(now())
+  updated_at DateTime
+  Record     Record?
+  Asset      Asset    @relation(fields: [asset_id], references: [id])
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
 }
 
 enum Status {
@@ -74,8 +66,67 @@ enum Status {
   NEED_FOLLOW_UP
 }
 
-enum Role {
+enum Type {
+  PREVENTIVE
+  CORRECTIVE
+  EMERGENCY
+}
+
+
+model Member {
+  id         String   @id @default(uuid())
+  name       String
+  gender     Gender
+  birthdate  DateTime
+  class      String   // contoh: "10 IPA 1"
+  email      String
+  password   String
+  status     Boolean @default(false)
+  position   Position @default(ANGGOTA)
+  joined_at  DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  EventMember EventMember[]
+}
+
+model Event {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  location     String       @default("")
+  participants EventMember[]
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+}
+
+model EventMember {
+  id        String   @id @default(uuid())
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  member    Member   @relation(fields: [memberId], references: [id])
+  memberId  String
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, memberId])
+}
+
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Position {
+  KETUA
+  WAKIL_KETUA
+  SEKRETARIS
+  BENDAHARA
+  ANGGOTA
+}
+
+enum StudentRole {
   ADMIN
-  MANAGER
-  MEMBER
+  USER
 }

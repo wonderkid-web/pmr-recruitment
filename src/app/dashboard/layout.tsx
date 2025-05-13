@@ -19,28 +19,39 @@ export default function DashboardLayout({
    const [user, setUser] = useState<null | {
       name: string
       email: string
-      role: string
    }>(null)
 
    useEffect(() => {
-      const stored = sessionStorage.getItem("user")
+      const stored = localStorage.getItem("id")
+      const name = localStorage.getItem("name")!
+      const email = localStorage.getItem("email")!
+
+      setUser({
+         name, email
+      })
+
+      console.log(stored)
 
       if (!stored) {
-         // router.push("/auth/login")
+         router.push("/auth/login")
          return
       }
 
-      try {
-         const parsed = JSON.parse(stored)
-         setUser(parsed)
-      } catch {
-         sessionStorage.removeItem("user")
-         router.push("/auth/login")
-      }
+      // try {
+      //    const parsed = JSON.parse(stored)
+      //    setUser(parsed)
+      // } catch {
+      //    localStorage.removeItem("id")
+      //    localStorage.removeItem("name")
+      //    localStorage.removeItem("role")
+      //    localStorage.removeItem("email")
+
+      //    // router.push("/auth/login")
+      // }
    }, [router])
 
 
-   // if (!user) return null
+   if (!user) return null
 
    return (
       <SidebarProvider>

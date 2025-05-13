@@ -26,10 +26,15 @@ export default function MemberLoginPage() {
 
     if (res.ok) {
       const data = await res.json();
+      localStorage.setItem("id", data.id); // Simpan ID member untuk identifikasi
+      localStorage.setItem("name", data.name); // Simpan ID member untuk identifikasi
+      localStorage.setItem("email", data.email); // Simpan ID member untuk identifikasi
+
       if (data.name == "admin") {
-        localStorage.setItem("memberId", data.id); // Simpan ID member untuk identifikasi
+        localStorage.setItem("role", "ADMIN"); // Simpan ID member untuk identifikasi
         router.push("/dashboard"); // Ganti dengan halaman utama member kamu
       } else {
+        localStorage.setItem("role", "ANGGOTA"); // Simpan ID member untuk identifikasi
         router.push("/member"); // Ganti dengan halaman utama member kamu
       }
     } else {

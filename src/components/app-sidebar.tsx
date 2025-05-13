@@ -52,35 +52,35 @@ export function AppSidebar() {
       title: "Dashboards",
       url: "/dashboard",
       icon: LayoutDashboard,
-      visible:true
+      visible: true,
       // visible: true,
     },
     {
       title: "Members",
       url: "/dashboard/member",
       icon: UsersRound,
-      visible:true
+      visible: true,
       // visible: user.role === "admin",
     },
     {
       title: "Event",
       url: "/dashboard/event",
       icon: CalendarDays,
-      visible:true
+      visible: true,
       // visible: user.role === "admin" || user.role === "MANAGER",
     },
-   //  {
-   //    title: "Assets",
-   //    url: "/dashboard/asset",
-   //    icon: Box,
-      // visible: user.role === "ADMIN",
-   //  },
-   //  {
-   //    title: "Records",
-   //    url: "/dashboard/record",
-   //    icon: NotepadText,
-      // visible: user.role === "ADMIN" || user.role === "MEMBER",
-   //  },
+    //  {
+    //    title: "Assets",
+    //    url: "/dashboard/asset",
+    //    icon: Box,
+    // visible: user.role === "ADMIN",
+    //  },
+    //  {
+    //    title: "Records",
+    //    url: "/dashboard/record",
+    //    icon: NotepadText,
+    // visible: user.role === "ADMIN" || user.role === "MEMBER",
+    //  },
   ];
 
   return (
@@ -102,7 +102,7 @@ export function AppSidebar() {
         <NavMain items={navMain.filter((item) => item.visible)} />
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={user} /> */}
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

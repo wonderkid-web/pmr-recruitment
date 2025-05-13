@@ -1,89 +1,116 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Event } from "@/interfaces/event";
-import { useSession } from "next-auth/react"; // Kalau kamu pakai next-auth
-import { Member } from "@/interfaces/member";
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import Cookies from "js-cookie"
+import { EventCard } from "@/app/components/event-card"
+
+interface Event {
+  id: string
+  title: string
+  description: string
+  date: string
+  location: string
+}
 
 export default function MemberEventPage() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [participatedEventIds, setParticipatedEventIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const memberId = "member-aktif-id"; // TODO: ganti ini dengan data session
+  const [events, setEvents] = useState<Event[]>([])
+  const [participatedEventIds, setParticipatedEventIds] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
+    // Get memberId from cookie instead of localStorage
+    const memberId = Cookies.get("memberId")
+
+    if (!memberId) {
+      // Redirect to login if no member ID is found
+      router.push("/login")
+      return
+    }
+
     const fetchEvents = async () => {
       try {
-        const res = await fetch("/api/event");
-        const data = await res.json();
-        setEvents(data);
+        // Fetch all events
+        const eventsRes = await fetch("/api/events")
+        if (!eventsRes.ok) throw new Error("Failed to fetch events")
+        const eventsData = await eventsRes.json()
+        setEvents(eventsData)
 
-        // Fetch event yang sudah diikuti
-        const res2 = await fetch(`/api/member/${memberId}/events`);
-        const data2 = await res2.json();
-        const ids = data2.map((e: { eventId: string }) => e.eventId);
-        setParticipatedEventIds(ids);
+        // Fetch events the member is participating in
+        const participationRes = await fetch(`/api/members/${memberId}/events`)
+        if (!participationRes.ok) throw new Error("Failed to fetch participation data")
+        const participationData = await participationRes.json()
+
+        // Extract event IDs the member is participating in
+        const participatedIds = participationData.map((item: any) => item.eventId)
+        setParticipatedEventIds(participatedIds)
       } catch (err) {
-        console.error("Error loading events", err);
+        console.error("Error loading events", err)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchEvents();
-  }, [memberId]);
+    fetchEvents()
+  }, [router])
 
-  const handleParticipate = async (eventId: string) => {
+  const handleParticipate = async (eventId: string): Promise<boolean> => {
+    const memberId = Cookies.get("memberId")
+    if (!memberId) {
+      router.push("/login")
+      return false
+    }
+
     try {
-      const res = await fetch(`/api/event/${eventId}/participants`, {
+      const res = await fetch(`/api/events/${eventId}/participate`, {
         method: "POST",
-        body: JSON.stringify({ memberId }),
         headers: {
           "Content-Type": "application/json",
         },
-      });
+        // No need to send memberId in body, we'll get it from the cookie in the API
+      })
 
-      if (res.ok) {
-        setParticipatedEventIds((prev) => [...prev, eventId]);
-      } else {
-        alert("Gagal ikut event");
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.message || "Failed to join event")
       }
-    } catch (err) {
-      console.error("Gagal join event:", err);
-    }
-  };
 
-  if (loading) return <p>Loading events...</p>;
+      // Update the local state
+      setParticipatedEventIds((prev) => [...prev, eventId])
+      return true
+    } catch (err) {
+      console.error("Failed to join event:", err)
+      return false
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-8 flex justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-4">Daftar Event</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {events.map((event) => (
-          <div key={event.id} className="border p-4 rounded-lg shadow-sm">
-            <h2 className="text-xl font-semibold">{event.title}</h2>
-            <p className="text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
-            <p className="mt-2 text-gray-700">{event.description}</p>
-            <p className="text-sm mt-1 text-gray-500">Lokasi: {event.location}</p>
+      <h1 className="text-2xl font-bold mb-6">Available Events</h1>
 
-            {participatedEventIds.includes(event.id) ? (
-              <button
-                disabled
-                className="mt-4 px-4 py-2 bg-gray-400 text-white text-sm rounded"
-              >
-                Participated
-              </button>
-            ) : (
-              <button
-                onClick={() => handleParticipate(event.id)}
-                className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded"
-              >
-                Participate
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+      {events.length === 0 ? (
+        <p className="text-center text-muted-foreground py-8">No events available at the moment.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {events.map((event) => (
+            <EventCard
+              key={event.id}
+              event={event}
+              isParticipating={participatedEventIds.includes(event.id)}
+              onParticipate={handleParticipate}
+            />
+          ))}
+        </div>
+      )}
     </div>
-  );
+  )
 }

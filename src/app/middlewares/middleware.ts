@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
   const role = req.cookies.get("id")?.value;
+  
 
   if (!role) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -10,7 +11,7 @@ export function middleware(req: NextRequest) {
 
   const url = req.nextUrl.pathname;
 
-  if (role === "admin") {
+  if (role === "ADMIN") {
     return NextResponse.next();
   } else {
     // if (role === "MANAGER") {

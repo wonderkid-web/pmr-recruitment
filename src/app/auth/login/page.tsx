@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from "js-cookie";
+import Image from "next/image";
 
 export default function MemberLoginPage() {
   const router = useRouter();
@@ -30,12 +32,16 @@ export default function MemberLoginPage() {
       localStorage.setItem("name", data.name); // Simpan ID member untuk identifikasi
       localStorage.setItem("email", data.email); // Simpan ID member untuk identifikasi
 
+      Cookies.set("id", data.id);
+      Cookies.set("name", data.name);
+      Cookies.set("email", data.email);
+
       if (data.name == "admin") {
         localStorage.setItem("role", "ADMIN"); // Simpan ID member untuk identifikasi
         router.push("/dashboard"); // Ganti dengan halaman utama member kamu
       } else {
         localStorage.setItem("role", "ANGGOTA"); // Simpan ID member untuk identifikasi
-        router.push("/member"); // Ganti dengan halaman utama member kamu
+        router.push("/dashboard/member-events"); // Ganti dengan halaman utama member kamu
       }
     } else {
       const err = await res.json();
@@ -45,12 +51,16 @@ export default function MemberLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="min-h-screen flex justify-center items-center bg-gray-50">
       <form
         onSubmit={handleLogin}
         className="bg-white p-6 rounded-lg shadow-md w-full max-w-md"
       >
-        <h1 className="text-xl font-bold mb-4">Login Member</h1>
+        <div className="flex justify-center mb-4">
+          <Image src="/logo.png" alt="Logo" width={100} height={100} />
+        </div>
+
+        <h1 className="text-xl font-bold mb-4 text-center">Login Member</h1>
 
         {error && (
           <div className="bg-red-100 text-red-700 px-3 py-2 rounded mb-3 text-sm">
@@ -80,7 +90,7 @@ export default function MemberLoginPage() {
           />
         </div>
 
-        <small className="mb-5">
+        <small className="mb-5 block">
           Belum punya akun?{" "}
           <Link href="/auth/register" className="text-blue-500">
             Registrasi
@@ -94,8 +104,7 @@ export default function MemberLoginPage() {
           }`}
           disabled={loading}
         >
-          {!loading && "Login"}
-          {loading && "Proses Masuk.."}
+          {!loading ? "Login" : "Proses Masuk.."}
         </button>
       </form>
     </div>

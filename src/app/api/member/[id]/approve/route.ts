@@ -1,8 +1,8 @@
 import { prisma } from '@/libs/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const {id} = await params
   const { status } = await req.json()
 
   try {
@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     })
 
     return NextResponse.json(updated)
-  } catch (err) {
-    return NextResponse.json({ error: "Gagal update status" }, { status: 500 })
+  } catch (error) {
+    return NextResponse.json({ error: "Gagal update status" + error}, { status: 500 })
   }
 }

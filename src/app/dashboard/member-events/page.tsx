@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import Cookies from "js-cookie"
-import { EventCard } from "@/app/components/event-card"
+import { EventCard } from "./components/event-card"
 
 interface Event {
   id: string
@@ -21,29 +20,31 @@ export default function MemberEventPage() {
 
   useEffect(() => {
     // Get memberId from cookie instead of localStorage
-    const memberId = Cookies.get("memberId")
+    const memberId = localStorage.getItem('id')
 
     if (!memberId) {
       // Redirect to login if no member ID is found
-      router.push("/login")
+      router.push("/auth/login")
       return
     }
 
     const fetchEvents = async () => {
       try {
         // Fetch all events
-        const eventsRes = await fetch("/api/events")
+        const eventsRes = await fetch("/api/event")
         if (!eventsRes.ok) throw new Error("Failed to fetch events")
         const eventsData = await eventsRes.json()
         setEvents(eventsData)
 
         // Fetch events the member is participating in
-        const participationRes = await fetch(`/api/members/${memberId}/events`)
+        const participationRes = await fetch(`/api/member/${memberId}/participate`)
         if (!participationRes.ok) throw new Error("Failed to fetch participation data")
         const participationData = await participationRes.json()
+        console.log(participationData)
 
         // Extract event IDs the member is participating in
-        const participatedIds = participationData.map((item: any) => item.eventId)
+        const participatedIds = participationData.map((item: { eventId: string }) => item.eventId)
+
         setParticipatedEventIds(participatedIds)
       } catch (err) {
         console.error("Error loading events", err)
@@ -56,14 +57,14 @@ export default function MemberEventPage() {
   }, [router])
 
   const handleParticipate = async (eventId: string): Promise<boolean> => {
-    const memberId = Cookies.get("memberId")
+    const memberId = localStorage.getItem('id')
     if (!memberId) {
       router.push("/login")
       return false
     }
 
     try {
-      const res = await fetch(`/api/events/${eventId}/participate`, {
+      const res = await fetch(`/api/event/${eventId}/participate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

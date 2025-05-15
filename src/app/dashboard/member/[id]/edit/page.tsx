@@ -6,9 +6,9 @@ import { Gender, Position } from "@/interfaces/member";
 export default async function EditMemberPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   const member = await prisma.member.findUnique({ where: { id } });
 

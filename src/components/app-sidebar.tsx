@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import {
-  Box,
-  NotepadText,
+
   UsersRound,
   CalendarDays,
   LayoutDashboard,
@@ -25,27 +24,32 @@ import Image from "next/image";
 
 export function AppSidebar() {
   const [user, setUser] = React.useState<null | {
-    name: string;
-    email: string;
-    role: string;
+    name: string | null;
+    email: string | null;
+    role: string | null;
   }>(null);
 
-  // React.useEffect(() => {
-  //   const stored = sessionStorage.getItem("user");
+  React.useEffect(() => {
+    const role = localStorage.getItem("role") || null
+    const name = localStorage.getItem("name") || null
+    const email = localStorage.getItem("email") || null
 
-  //   if (stored) {
-  //     try {
-  //       const parsed = JSON.parse(stored);
-  //       setUser(parsed);
-  //     } catch (err) {
-  //       console.error(err);
-  //       sessionStorage.removeItem("user");
-  //       setUser(null);
-  //     }
-  //   }
-  // }, []);
+    if (role) {
+      try {
+        setUser({
+          name, email, role
+        });
+      } catch (err) {
+        console.error(err);
+        localStorage.removeItem("role")
+        localStorage.removeItem("name")
+        localStorage.removeItem("email")
+        setUser(null);
+      }
+    }
+  }, []);
 
-  // if (!user) return null;
+  if (!user) return null;
 
   const navMain = [
     {
@@ -59,15 +63,25 @@ export function AppSidebar() {
       title: "Members",
       url: "/dashboard/member",
       icon: UsersRound,
-      visible: true,
-      // visible: user.role === "admin",
+      visible: user.role === "ADMIN",
     },
     {
       title: "Event",
       url: "/dashboard/event",
       icon: CalendarDays,
-      visible: true,
-      // visible: user.role === "admin" || user.role === "MANAGER",
+      visible: user.role === "ADMIN"
+    },
+    {
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: UsersRound,
+      visible: user.role === "ANGGOTA"
+    },
+    {
+      title: "Events Berlangsung",
+      url: "/dashboard/member-events",
+      icon: CalendarDays,
+      visible: user.role === "ANGGOTA"
     },
     //  {
     //    title: "Assets",
@@ -102,7 +116,7 @@ export function AppSidebar() {
         <NavMain items={navMain.filter((item) => item.visible)} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

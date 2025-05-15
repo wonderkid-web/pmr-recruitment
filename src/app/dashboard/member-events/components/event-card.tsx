@@ -4,6 +4,8 @@ import { useState } from "react"
 import { format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
+
 
 
 interface Event {
@@ -32,17 +34,10 @@ export function EventCard({ event, isParticipating, onParticipate }: EventCardPr
       const success = await onParticipate(event.id)
       if (success) {
         setParticipating(true)
-        toast({
-          title: "Success!",
-          description: `You are now participating in "${event.title}"`,
-        })
+        toast.info(`You are now participating in "${event.title}"`)
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to join the event. Please try again.",
-        variant: "destructive",
-      })
+      toast.error("Failed to join the event. Please try again." + error) 
     } finally {
       setLoading(false)
     }

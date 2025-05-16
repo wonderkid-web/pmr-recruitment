@@ -12,6 +12,7 @@ export default function MemberForm({ data, onSuccess }: MemberFormProps) {
   const [form, setForm] = useState<Partial<Member>>({
     id: data?.id,
     name: data?.name ?? "",
+    schoolOrigin: data?.schoolOrigin ?? "SMK Putra Anda",
     gender: data?.gender ?? Gender.MALE, // Default ke male
     password: data?.password ?? "",
     birthdate: data?.birthdate, // Tanggal Lahir
@@ -74,8 +75,17 @@ export default function MemberForm({ data, onSuccess }: MemberFormProps) {
 
       <input
         type="text"
+        placeholder="Asal Sekolah"
+        value={form.schoolOrigin}
+        onChange={(e) => setForm({ ...form, class: e.target.value })}
+        className="w-full border px-3 py-2 rounded"
+        required
+      />
+
+      <input
+        type="text"
         placeholder="Kelas"
-        value={form.class}
+        // value={form.class}
         onChange={(e) => setForm({ ...form, class: e.target.value })}
         className="w-full border px-3 py-2 rounded"
         required

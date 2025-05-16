@@ -78,6 +78,7 @@ model Member {
   name       String
   gender     Gender
   birthdate  DateTime
+  schoolOrigin  String @default("SMK Putra Anda")
   class      String   // contoh: "10 IPA 1"
   email      String
   password   String

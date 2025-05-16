@@ -20,6 +20,7 @@ export interface Member {
   birthdate: Date | string;
   class: string;  // contoh: "10 IPA 1"
   position: Position;
+  schoolOrigin: string;
   joined_at: Date;
   created_at: Date;
   updated_at: Date;

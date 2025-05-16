@@ -71,6 +71,7 @@ export default function MemberList() {
             <th className="p-2">Nama</th>
             <th className="p-2">Jenis Kelamin</th>
             <th className="p-2">Tanggal Lahir</th>
+            <th className="p-2">Asal Sekolah</th>
             <th className="p-2">Kelas</th>
             <th className="p-2">Posisi</th>
             <th className="p-2">Bergabung</th>
@@ -86,6 +87,7 @@ export default function MemberList() {
               <td className="p-2">
                 {new Date(m.birthdate).toLocaleDateString()}
               </td>
+              <td className="p-2">{m.schoolOrigin}</td>
               <td className="p-2">{m.class}</td>
               <td className="p-2">{m.position}</td>
               <td className="p-2">

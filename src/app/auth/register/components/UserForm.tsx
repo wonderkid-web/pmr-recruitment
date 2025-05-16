@@ -12,7 +12,7 @@ export default function MemberForm({ data, onSuccess }: MemberFormProps) {
   const [form, setForm] = useState<Partial<Member>>({
     id: data?.id,
     name: data?.name ?? "",
-    schoolOrigin: data?.schoolOrigin ?? "SMK Putra Anda",
+    schoolOrigin: data?.schoolOrigin ?? "",
     gender: data?.gender ?? Gender.MALE, // Default ke male
     password: data?.password ?? "",
     birthdate: data?.birthdate, // Tanggal Lahir

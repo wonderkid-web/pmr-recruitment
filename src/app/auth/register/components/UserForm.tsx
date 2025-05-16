@@ -77,7 +77,7 @@ export default function MemberForm({ data, onSuccess }: MemberFormProps) {
         type="text"
         placeholder="Asal Sekolah"
         value={form.schoolOrigin}
-        onChange={(e) => setForm({ ...form, class: e.target.value })}
+        onChange={(e) => setForm({ ...form, schoolOrigin: e.target.value })}
         className="w-full border px-3 py-2 rounded"
         required
       />
